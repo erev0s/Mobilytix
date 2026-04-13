@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mobilytix"
+version = "0.1.0"
+description = "AI-native Android penetration testing platform powered by MCP"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.11"
+authors = [
+    {name = "erev0s"}
+]
+keywords = ["android", "security", "penetration-testing", "mcp", "ai"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+]
+
+dependencies = [
+    "mcp>=1.0.0",
+    "androguard>=3.3.5",
+    "apkInspector>=1.3.6",
+    "pyyaml>=6.0",
+    "aiofiles>=23.0",
+    "pydantic>=2.0",
+    "loguru>=0.7",
+    "starlette>=0.27",
+    "uvicorn>=0.23",
+
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "ruff>=0.1",
+    "mypy>=1.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/erev0s/Mobilytix"
+Repository = "https://github.com/erev0s/Mobilytix"
+Issues = "https://github.com/erev0s/Mobilytix/issues"
+
+[project.scripts]
+mobilytix = "mcp_server.server:main"
+
+[tool.setuptools.packages.find]
+include = ["mcp_server*"]
+
+[tool.setuptools.package-data]
+"mcp_server.tools.dynamic.frida_scripts" = ["*.js"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests requiring Docker (deselect with '-m \"not integration\"')",
+]

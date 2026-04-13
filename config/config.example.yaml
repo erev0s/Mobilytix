@@ -1,0 +1,16 @@
+platform:
+  workspace_dir: /workspace         # Where APKs and analysis artifacts are stored
+  log_level: INFO
+
+mcp:
+  transport: http                   # http | stdio
+  host: 127.0.0.1                  # bind address for local source runs
+  port: 3000                        # port for HTTP server
+
+docker:
+  android_image: ghcr.io/erev0s/mobilytix-android:latest
+  static_image: ghcr.io/erev0s/mobilytix-static:latest
+  static_container: mobilytix-static
+  android_container: mobilytix-android
+  adb_port: 5555
+  mitmproxy_port: 8080

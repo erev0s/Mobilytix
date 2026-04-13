@@ -1,0 +1,102 @@
+Mobilytix
+Copyright 2026 erev0s
+
+Licensed under the Apache License, Version 2.0.
+https://github.com/erev0s/Mobilytix
+
+---
+
+This product bundles or depends on the following third-party software.
+Each tool is downloaded at Docker image build time or referenced by the
+runtime compose files and is subject to its own license terms. This file is
+a high-level notice for the main runtime tools, not a complete SBOM for every
+transitive Debian, Python, Node, or container-image dependency.
+
+-------------------------------------------------------------------------------
+python:3.12-slim / Debian packages
+https://hub.docker.com/_/python
+https://www.debian.org/legal/licenses/
+License: Python Software Foundation License and Debian package component licenses
+
+jadx — Dex to Java decompiler
+https://github.com/skylot/jadx
+License: Apache 2.0
+
+apktool — APK reverse engineering tool
+https://github.com/iBotPeaches/Apktool
+License: Apache 2.0
+
+Android SDK (aapt2, apksigner)
+https://developer.android.com/tools
+Copyright Google LLC
+License: Android SDK License Agreement and component licenses
+
+androguard — Android application analysis library
+https://github.com/androguard/androguard
+License: Apache 2.0
+
+apkInspector — APK structural analysis library
+https://github.com/erev0s/apkInspector
+License: Apache 2.0
+
+radare2 — Reverse engineering framework
+https://github.com/radareorg/radare2
+License: LGPL-3.0
+
+r2dec — radare2 decompiler plugin
+https://github.com/wargio/r2dec-js
+License: LGPL-3.0
+
+semgrep — Static analysis engine
+https://github.com/semgrep/semgrep
+License: LGPL-2.1
+
+apkleaks — APK secrets scanner
+https://github.com/dwisiswant0/apkleaks
+License: Apache 2.0
+
+frida / frida-tools — Dynamic instrumentation toolkit
+https://github.com/frida/frida
+License: wxWindows Library Licence 3.1
+
+blutter — Flutter AOT analysis tool
+https://github.com/worawit/blutter
+License: MIT
+
+hermes-dec — React Native Hermes bytecode parser and decompiler
+https://github.com/P1sec/hermes-dec
+License: AGPL-3.0-or-later
+
+.NET SDK/runtime
+https://github.com/dotnet/runtime
+https://github.com/dotnet/install-scripts
+License: MIT and Microsoft .NET component terms
+
+ILSpy / ilspycmd — .NET assembly decompiler
+https://github.com/icsharpcode/ILSpy
+License: MIT
+
+Il2CppDumper — Unity IL2CPP metadata extractor
+https://github.com/Perfare/Il2CppDumper
+License: MIT
+
+drozer — Android security assessment framework
+https://github.com/ReversecLabs/drozer
+License: BSD 3-Clause
+
+mitmproxy — HTTP/HTTPS traffic interception proxy
+https://github.com/mitmproxy/mitmproxy
+License: MIT
+
+ripgrep — Fast regex search tool
+https://github.com/BurntSushi/ripgrep
+License: MIT / Unlicense
+
+budtmo/docker-android — Android emulator Docker base image
+https://github.com/budtmo/docker-android
+License: Custom Apache 2.0 license with upstream fork/data-processing terms
+
+node:22-alpine / MCP Inspector
+https://hub.docker.com/_/node
+https://github.com/modelcontextprotocol/inspector
+License: Node.js and MCP Inspector component licenses

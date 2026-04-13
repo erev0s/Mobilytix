@@ -1,0 +1,90 @@
+services:
+  static:
+    # SECURITY NOTICE:
+    # Published ports in this file bind to host loopback only. Do not change
+    # 127.0.0.1 to 0.0.0.0 unless this is an isolated lab host or the service
+    # is behind your own authentication/reverse-proxy layer.
+    # MOBILYTIX_WORKSPACE_DIR may contain copied APKs and decoded artifacts;
+    # keep that directory outside the public repository.
+    image: ${MOBILYTIX_IMAGE_NAMESPACE:-ghcr.io/erev0s}/mobilytix-static:${MOBILYTIX_IMAGE_TAG:-latest}
+    container_name: mobilytix-static
+    volumes:
+      - ${MOBILYTIX_WORKSPACE_DIR:?set MOBILYTIX_WORKSPACE_DIR}:/workspace
+      - ${MOBILYTIX_APK_INPUT_DIR:?set MOBILYTIX_APK_INPUT_DIR}:/inbox:ro
+      - mitmproxy_data:/mitmproxy:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - MOBILYTIX_TRANSPORT=http
+      - MOBILYTIX_HOST=0.0.0.0
+      - MOBILYTIX_PORT=3000
+      - MOBILYTIX_WORKSPACE=/workspace
+      - MOBILYTIX_LOG_LEVEL=INFO
+      - MOBILYTIX_STATELESS=false
+      - MOBILYTIX_MITMWEB_TOKEN=${MOBILYTIX_MITMWEB_TOKEN:-mobilytix-local-token}
+    depends_on:
+      - mitmproxy
+    restart: unless-stopped
+    networks:
+      - mobilytix
+
+  android:
+    # Dynamic profile exposes emulator control/viewer ports to localhost only.
+    # Keep these bindings local unless the host is in an isolated lab network.
+    image: ${MOBILYTIX_IMAGE_NAMESPACE:-ghcr.io/erev0s}/mobilytix-android:${MOBILYTIX_IMAGE_TAG:-latest}
+    container_name: mobilytix-android
+    profiles:
+      - dynamic
+    privileged: true
+    devices:
+      - /dev/kvm
+    volumes:
+      - ${MOBILYTIX_WORKSPACE_DIR:?set MOBILYTIX_WORKSPACE_DIR}:/workspace
+    environment:
+      - DEVICE=Nexus 5
+      - DATAPARTITION=4096m
+      - RAM=3072
+      - WEB_VNC=true
+    ports:
+      - "127.0.0.1:5555:5555"
+      - "127.0.0.1:5900:5900"
+      - "127.0.0.1:6080:6080"
+    restart: unless-stopped
+    networks:
+      - mobilytix
+
+  inspector:
+    image: node:22-alpine
+    container_name: mobilytix-inspector
+    profiles:
+      - inspector
+    command: npx --yes @modelcontextprotocol/inspector
+    ports:
+      - "127.0.0.1:6274:6274"
+      - "127.0.0.1:6277:6277"
+    environment:
+      - HOST=0.0.0.0
+      - MCP_AUTO_OPEN_ENABLED=false
+      - DANGEROUSLY_OMIT_AUTH=true
+    depends_on:
+      - static
+    restart: unless-stopped
+    networks:
+      - mobilytix
+
+  mitmproxy:
+    image: mitmproxy/mitmproxy:latest
+    container_name: mobilytix-mitmproxy
+    command: mitmweb --listen-host 0.0.0.0 --listen-port 8080 --web-host 0.0.0.0 --web-port 8081 --set confdir=/home/mitmproxy/.mitmproxy --set web_password=${MOBILYTIX_MITMWEB_TOKEN:-mobilytix-local-token} --set web_open_browser=false
+    volumes:
+      - mitmproxy_data:/home/mitmproxy/.mitmproxy
+    restart: unless-stopped
+    networks:
+      - mobilytix
+
+networks:
+  mobilytix:
+    driver: bridge
+
+volumes:
+  mitmproxy_data:

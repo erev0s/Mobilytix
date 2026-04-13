@@ -1,0 +1,104 @@
+services:
+  # -----------------------------------------------------------------------
+  # MCP Server + Static Analysis (main container)
+  # -----------------------------------------------------------------------
+  static:
+    # SECURITY NOTICE:
+    # Host-published ports bind to 127.0.0.1 by default. Change this only for
+    # isolated lab hosts or when fronting the services with your own auth layer.
+    build:
+      context: ..
+      dockerfile: docker/static/Dockerfile
+      args:
+        BLUTTER_REF: ${BLUTTER_REF:-129377f65dffecd59535eb35041de534c4dea2ea}
+        HERMES_DEC_REF: ${HERMES_DEC_REF:-1c112f85e3fb49442c57a0ed31b83bb3825db639}
+        FRIDA_VERSION: ${FRIDA_VERSION:-17.9.1}
+        FRIDA_TOOLS_VERSION: ${FRIDA_TOOLS_VERSION:-14.8.0}
+    container_name: mobilytix-static
+    volumes:
+      - ${MOBILYTIX_WORKSPACE_DIR:-../workspace}:/workspace
+      - ${MOBILYTIX_APK_INPUT_DIR:-../inbox}:/inbox
+      - mitmproxy_data:/mitmproxy:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - MOBILYTIX_TRANSPORT=http
+      - MOBILYTIX_HOST=0.0.0.0
+      - MOBILYTIX_PORT=3000
+      - MOBILYTIX_WORKSPACE=/workspace
+      - MOBILYTIX_LOG_LEVEL=INFO
+      - MOBILYTIX_STATELESS=false
+      - MOBILYTIX_MITMWEB_TOKEN=${MOBILYTIX_MITMWEB_TOKEN:-mobilytix-local-token}
+    depends_on:
+      - mitmproxy
+    restart: unless-stopped
+    networks:
+      - mobilytix
+
+  # -----------------------------------------------------------------------
+  # Android Emulator (dynamic analysis)
+  # -----------------------------------------------------------------------
+  android:
+    build:
+      context: ..
+      dockerfile: docker/android/Dockerfile
+      args:
+        FRIDA_VERSION: ${FRIDA_VERSION:-17.9.1}
+    container_name: mobilytix-android
+    privileged: true
+    devices:
+      - /dev/kvm
+    volumes:
+      - ${MOBILYTIX_WORKSPACE_DIR:-../workspace}:/workspace
+    environment:
+      - DEVICE=Nexus 5
+      - DATAPARTITION=4096m
+      - RAM=3072
+      - WEB_VNC=true
+    ports:
+      - "127.0.0.1:5555:5555"   # ADB
+      - "127.0.0.1:5900:5900"   # VNC
+      - "127.0.0.1:6080:6080"   # noVNC (web browser viewer)
+    restart: unless-stopped
+    networks:
+      - mobilytix
+
+  # -----------------------------------------------------------------------
+  # MCP Inspector (tool testing UI — http://localhost:6274)
+  # -----------------------------------------------------------------------
+  inspector:
+    image: node:22-alpine
+    container_name: mobilytix-inspector
+    command: npx --yes @modelcontextprotocol/inspector
+    ports:
+      - "127.0.0.1:6274:6274"   # Web UI
+      - "127.0.0.1:6277:6277"   # Proxy
+    environment:
+      - HOST=0.0.0.0
+      - MCP_AUTO_OPEN_ENABLED=false
+      - DANGEROUSLY_OMIT_AUTH=true
+    depends_on:
+      - static
+    restart: unless-stopped
+    networks:
+      - mobilytix
+
+  # -----------------------------------------------------------------------
+  # mitmproxy (traffic interception)
+  # -----------------------------------------------------------------------
+  mitmproxy:
+    image: mitmproxy/mitmproxy:latest
+    container_name: mobilytix-mitmproxy
+    command: mitmweb --listen-host 0.0.0.0 --listen-port 8080 --web-host 0.0.0.0 --web-port 8081 --set confdir=/home/mitmproxy/.mitmproxy --set web_password=${MOBILYTIX_MITMWEB_TOKEN:-mobilytix-local-token} --set web_open_browser=false
+    volumes:
+      - mitmproxy_data:/home/mitmproxy/.mitmproxy
+    restart: unless-stopped
+    networks:
+      - mobilytix
+
+networks:
+  mobilytix:
+    driver: bridge
+
+volumes:
+  mitmproxy_data:
