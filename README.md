@@ -42,7 +42,7 @@ Overall strict instance recall is **90.5%** (38/42) and family-level recall is *
 
 ## Quick start
 
-This is the primary new-user path. It pulls prebuilt images from GHCR and exposes Mobilytix over HTTP MCP on the local host.
+This is the primary new-user path. It pulls prebuilt images from Docker Hub and exposes Mobilytix over HTTP MCP on the local host.
 
 ### Prerequisites
 
@@ -63,8 +63,8 @@ Set these values in `.env.runtime`:
 
 - `MOBILYTIX_APK_INPUT_DIR`: host folder containing APKs to analyze
 - `MOBILYTIX_WORKSPACE_DIR`: absolute host folder outside this repo where Mobilytix should persist sessions and artifacts
-- `MOBILYTIX_IMAGE_TAG`: image tag to pull, usually `latest`
-- `MOBILYTIX_IMAGE_NAMESPACE`: optional GHCR namespace override; default is `ghcr.io/erev0s`
+- `MOBILYTIX_IMAGE_TAG`: base image tag to pull, usually `latest`; the runtime uses `static-<tag>` and `android-<tag>`
+- `MOBILYTIX_IMAGE_REPOSITORY`: optional Docker Hub repository override; default is `erev0s/mobilytix`
 
 2. Start the default runtime:
 
@@ -170,6 +170,13 @@ For local HTTP development:
 ```bash
 python -m mcp_server --http
 ```
+
+### Publishing images
+
+Both runtime images are in one Docker Hub repository with different tags:
+
+- `erev0s/mobilytix:static-<tag>`
+- `erev0s/mobilytix:android-<tag>`
 
 ## Tools
 

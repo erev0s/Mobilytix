@@ -6,7 +6,7 @@ services:
     # is behind your own authentication/reverse-proxy layer.
     # MOBILYTIX_WORKSPACE_DIR may contain copied APKs and decoded artifacts;
     # keep that directory outside the public repository.
-    image: ${MOBILYTIX_IMAGE_NAMESPACE:-ghcr.io/erev0s}/mobilytix-static:${MOBILYTIX_IMAGE_TAG:-latest}
+    image: ${MOBILYTIX_IMAGE_REPOSITORY:-erev0s/mobilytix}:static-${MOBILYTIX_IMAGE_TAG:-latest}
     container_name: mobilytix-static
     volumes:
       - ${MOBILYTIX_WORKSPACE_DIR:?set MOBILYTIX_WORKSPACE_DIR}:/workspace
@@ -31,7 +31,7 @@ services:
   android:
     # Dynamic profile exposes emulator control/viewer ports to localhost only.
     # Keep these bindings local unless the host is in an isolated lab network.
-    image: ${MOBILYTIX_IMAGE_NAMESPACE:-ghcr.io/erev0s}/mobilytix-android:${MOBILYTIX_IMAGE_TAG:-latest}
+    image: ${MOBILYTIX_IMAGE_REPOSITORY:-erev0s/mobilytix}:android-${MOBILYTIX_IMAGE_TAG:-latest}
     container_name: mobilytix-android
     profiles:
       - dynamic

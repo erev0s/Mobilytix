@@ -3,23 +3,22 @@ name: Publish Images
 on:
   workflow_dispatch:
     inputs:
-      image_namespace:
-        description: "GHCR namespace, for example ghcr.io/acme"
+      image_repository:
+        description: "Docker Hub repository, for example erev0s/mobilytix"
         required: true
-        default: "ghcr.io/erev0s"
+        default: "erev0s/mobilytix"
       image_tag:
-        description: "Image tag to publish"
+        description: "Base image tag to publish; workflow prefixes it with static- or android-"
         required: true
         default: "latest"
       publish_latest:
-        description: "Also publish the latest tag"
+        description: "Also publish static-latest and android-latest tags"
         required: true
         type: boolean
         default: false
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   publish-static:
@@ -31,21 +30,23 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GHCR
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Prepare static image metadata
         id: static_meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ inputs.image_namespace }}/mobilytix-static
+          images: ${{ inputs.image_repository }}
+          flavor: |
+            latest=false
           tags: |
-            type=raw,value=${{ inputs.image_tag }}
-            type=raw,value=latest,enable=${{ inputs.publish_latest }}
+            type=raw,value=static-${{ inputs.image_tag }}
+            type=raw,value=static-latest,enable=${{ inputs.publish_latest }}
           labels: |
             org.opencontainers.image.title=Mobilytix Static Runtime
             org.opencontainers.image.description=Mobilytix MCP server and static Android analysis tools
@@ -71,21 +72,23 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GHCR
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Prepare android image metadata
         id: android_meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ inputs.image_namespace }}/mobilytix-android
+          images: ${{ inputs.image_repository }}
+          flavor: |
+            latest=false
           tags: |
-            type=raw,value=${{ inputs.image_tag }}
-            type=raw,value=latest,enable=${{ inputs.publish_latest }}
+            type=raw,value=android-${{ inputs.image_tag }}
+            type=raw,value=android-latest,enable=${{ inputs.publish_latest }}
           labels: |
             org.opencontainers.image.title=Mobilytix Android Runtime
             org.opencontainers.image.description=Mobilytix Android emulator and dynamic analysis helpers

@@ -48,8 +48,8 @@ class McpConfig:
 
 @dataclass
 class DockerConfig:
-    android_image: str = "ghcr.io/erev0s/mobilytix-android:latest"
-    static_image: str = "ghcr.io/erev0s/mobilytix-static:latest"
+    android_image: str = "erev0s/mobilytix:android-latest"
+    static_image: str = "erev0s/mobilytix:static-latest"
     static_container: str = "mobilytix-static"
     android_container: str = "mobilytix-android"
     adb_port: int = 5555
