@@ -173,7 +173,7 @@ python -m mcp_server --http
 
 ### Publishing images
 
-Both runtime images are in one Docker Hub repository with different tags:
+Both runtime images are in one [Docker Hub repository with different tags](https://hub.docker.com/r/erev0s/mobilytix/tags):
 
 - `erev0s/mobilytix:static-<tag>`
 - `erev0s/mobilytix:android-<tag>`
