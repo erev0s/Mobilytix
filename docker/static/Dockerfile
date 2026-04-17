@@ -36,7 +36,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 # Install radare2 (rabin2) from upstream release tarball
 # Debian slim does not reliably ship a radare2 package.
 # -------------------------------------------------------------------------
-ARG RADARE2_VERSION=5.9.8
+ARG RADARE2_VERSION=6.0.7
 RUN wget -q "https://github.com/radareorg/radare2/releases/download/${RADARE2_VERSION}/radare2-${RADARE2_VERSION}.tar.xz" \
     -O /tmp/radare2.tar.xz \
     && mkdir -p /tmp/radare2-src \
